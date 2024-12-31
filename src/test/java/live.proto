@@ -1,0 +1,227 @@
+syntax = "proto3";
+package room;
+import "google/protobuf/any.proto";
+
+message Group {
+    string roomId = 1;
+    repeated Unit units = 2;
+    int64 serverTime = 3; // 服务端下发时间戳
+}
+
+enum Type {
+    UN_KNOW = 0;
+    TITLE = 101;
+    BACKGROUND = 102;
+    ANNOUNCE = 103;
+    COVER = 104;
+    ONLINE_NUM = 105;
+    ROOM_STAR_LIGHT = 106;
+    VERSION = 107;
+    LINK_VERSION = 108;
+    MIC_STAR_LIGHT = 109;
+    MIC_EMOJI = 201;
+    Chat_MSG = 301;
+    HEART = 302;
+    GIFT = 401;
+    EFFECT = 402;
+    HUG_UP_MIC_SEAT = 501;
+    HUG_DOWN_MIC_SEAT = 502;
+    MUTE_MIC_SEAT = 503;
+    UN_MUTE_MIC_SEAT = 504;
+    KICK_OUT = 505;
+    LOCK_MIC_SEAT = 506;
+    UPDATE_LINK_DATA = 507;
+}
+
+message Unit {
+    Type type = 1;
+    google.protobuf.Any object = 2;
+    string msgId = 3;
+}
+
+//更新房间背景
+message BackgroundMessage {
+    string background = 1;
+}
+
+//更新房间标题
+message TitleMessage {
+    string title = 1;
+}
+
+//更新房间公告
+message AnnounceMessage {
+    string announce = 1;
+}
+
+//更新房间封面
+message CoverMessage {
+    string cover = 1;
+}
+
+//更新房间在线人数
+message OnlineNumMessage {
+    int64 onlineNum = 1;
+}
+
+//更新房间总星光值
+message StarLightMessage {
+    int64 roomStarlight = 1; //房间星光值
+}
+
+//更新麦上用户星光值
+message MicStarLightMessage {
+    string uid = 1;
+    int64 MicStarlight = 2; //用户星光值
+}
+
+//更新房间版本号
+message Version {
+    int64 Version = 1;
+}
+
+//更新房间连线版本
+message LinkVersion {
+    int64 linkVersion = 1;
+}
+
+//麦上表情
+message MicEmoji {
+    string id = 1;
+    string result = 2;
+    string uid = 3;
+}
+
+//聊聊消息
+message ChatMsg {
+    int32 type = 1; // 类型: 1、普通聊聊（用户发送） 2、系统代发聊聊、 3、系统消息 4、交互型 5、礼物
+    repeated ChatMsgLabels labels = 2; //长链 [{url,w,h}...]
+    string sign = 3;
+    string signColor = 4;
+    string text = 5; //聊聊文本（用户发送）
+    string textColor = 6; //聊聊文本（用户发送）
+    MsgContent content = 7; //聊聊文本（可替换）
+    string sex = 8;
+    string senderId = 9;
+    string action = 10; //整条聊聊的action
+    repeated MsgButton button = 11; //聊聊按钮
+    MsgGift gift = 12; //聊聊礼物
+}
+
+//聊聊礼物
+message MsgGift {
+    string receiverName = 1;
+    string url = 2;
+    int32 w = 3;
+    int32 h = 4;
+    int32 giftCount = 5;
+}
+
+//聊聊文本
+message MsgContent {
+    string tid = 1; //依据此ID查询对应html文案
+    repeated string replaceText = 2;
+}
+
+//聊聊按钮
+message MsgButton {
+    string tid = 1; //依据此ID查询对应html文案
+    string defaultText = 2; //默认按钮文本
+    string color = 3;
+    string action = 4;
+}
+
+//聊聊labels
+message ChatMsgLabels {
+    int32 w = 1;
+    int32 h = 2;
+    string url = 3;
+}
+
+message Heart {
+}
+
+//礼物
+message Gift {
+    string productId = 1;
+    string avatar = 2; //头像
+    string starId = 3;
+    int32 buyTime = 4; //购买次数
+    int32 buyCount = 5; //购买数量
+    string giftUrl = 6; //礼物图片
+    string action = 7; //托盘跳转
+    string receiverName = 8;
+    Effect effect = 9;
+    string senderId = 10;
+    string sign = 11;
+}
+
+//特效
+message Effect {
+    string effectId = 1;
+    int32 weight = 2;
+    string effectExt = 3;
+    string type = 4;
+}
+
+//抱人上麦
+message HugUpMicSeat {
+    int32 seatNo = 1;
+    int64 linkVersion = 2;
+    string msg = 3; //提示信息
+}
+
+//抱人下麦
+message HugDownMicSeat {
+    int32 seatNo = 1;
+    int64 linkVersion = 2;
+}
+
+//静麦
+message MuteMicSeat {
+    int32 seatNo = 1;
+    int64 linkVersion = 2;
+}
+
+//解封静麦
+message UnMuteMicSeat {
+    int32 seatNo = 1;
+    int64 linkVersion = 2;
+}
+
+//踢人
+message KickOut {
+    int32 seatNo = 1;
+    int64 linkVersion = 2;
+}
+
+//封麦
+message LockMicSeat {
+    int32 seatNo = 1;
+    int64 linkVersion = 2;
+}
+
+//更新linkData
+message UpdateLinkData {
+    string linkData = 1;
+    int64 linkVersion = 2;
+}
+
+//IM上行
+message Im {
+    imEvent event = 1; //事件
+    string time = 2; //时间（毫秒）
+    string roomId = 3;
+    string uid = 4;
+    platform client = 5;
+    string channelId = 6;
+    string imAddr = 7;
+    int64 version = 8;
+    enum platform {
+        IOS = 0;
+        ANDROID = 1;
+    }
+    enum imEvent {
+        FIRST_ENTER = 0; //首次连上IM
+    }
+}

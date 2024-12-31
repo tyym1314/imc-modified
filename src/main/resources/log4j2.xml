@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" shutdownHook="disable">
+
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+    <RollingFile name="connector" fileName="${sys:com.immomo.connector.logpath}/connector.log"
+      filePattern="${sys:com.immomo.connector.logpath}/connector-%d{MM-dd-yyyy-HH}-%i.log.zip">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="20"/>
+    </RollingFile>
+
+    <RollingFile name="connectorError"
+      fileName="${sys:com.immomo.connector.logpath}/connector-error.log"
+      filePattern="${sys:com.immomo.connector.logpath}/connector-error-%d{MM-dd-yyyy-HH}-%i.log.zip">
+      <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="20"/>
+    </RollingFile>
+
+    <!-- kafka 消息日志 -->
+    <RollingFile name="message" fileName="${sys:com.immomo.connector.logpath}/message.log"
+      filePattern="${sys:com.immomo.connector.logpath}/message-%d{MM-dd-yyyy-HH}-%i.log.zip">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="20"/>
+    </RollingFile>
+
+    <RollingFile name="netty" fileName="${sys:com.immomo.connector.logpath}/netty.log"
+      filePattern="${sys:com.immomo.connector.logpath}/netty-%d{MM-dd-yyyy}-%i.log.zip">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+      </PatternLayout>
+
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="250 MB"/>
+      </Policies>
+    </RollingFile>
+
+    <Async name="asyncConnector">
+      <AppenderRef ref="connector"/>
+    </Async>
+    <Async name="asyncConnectorError">
+      <AppenderRef ref="connectorError"/>
+    </Async>
+    <Async name="asyncMessage">
+      <AppenderRef ref="message"/>
+    </Async>
+    <Async name="nettyAsync">
+      <AppenderRef ref="netty"/>
+    </Async>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="com.immomo.live.im.base.utils.MessageUtil" level="info" additivity="false">
+      <AppenderRef ref="asyncMessage"/>
+    </Logger>
+    <Logger name="io.netty.handler.logging.LoggingHandler" level="error" additivity="false">
+      <AppenderRef ref="nettyAsync"/>
+    </Logger>
+    <Logger name="io.netty" level="info"/>
+    <Root level="info" additivity="false">
+      <AppenderRef ref="asyncConnector"/>
+      <AppenderRef ref="asyncConnectorError"/>
+    </Root>
+  </Loggers>
+</Configuration>

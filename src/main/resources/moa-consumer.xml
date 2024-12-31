@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" value="#{@systemProperties}"/>
+    <property name="targetMethod" value="putAll"/>
+    <property name="arguments">
+      <props>
+        <prop key="runMode">ONLINE</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean class="com.immomo.moa.spring.MOAConsumerBean">
+    <property name="serviceUri" value="/service/platform/onelink-inner"/>
+    <property name="interface" value="com.immomo.moaservice.onelink.api.IOnelinkInnerService"/>
+    <property name="protocol" value="tcp"/>
+    <property name="timeout" value="1500"/>
+  </bean>
+
+  <bean class="com.immomo.moa.spring.MOAConsumerBean">
+    <property name="serviceUri" value="/service/live/token-center"/>
+    <property name="interface" value="com.immomo.moaservice.live.tokencenter.api.ITokenCenterService"/>
+    <property name="protocol" value="tcp"/>
+    <property name="timeout" value="1500"/>
+  </bean>
+
+  <bean class="com.immomo.moa.spring.MOAConsumerBean">
+    <property name="serviceUri" value="/service/goback/broker"/>
+    <property name="interface" value="com.immomo.goback3.api.broker.GobackBrokerService"/>
+    <property name="protocol" value="tcp"/>
+    <property name="timeout" value="1000"/>
+  </bean>
+
+</beans>
